@@ -38,16 +38,8 @@ inline binwriter& binwriter::operator<<(const std::string& m) {
 	return *this;
 }
 
-struct h_image_data_struct {
-    std::string       data_name;
-    uint32_t          data_len;
-    uint8_t         * data;
-	friend binwriter& operator << (binwriter& os, const h_image_data_struct & m) {
-        os.write(reinterpret_cast<char*>(m.data), m.data_len);
-    	return os;
-    }
-};
-extern std::map<std::string,uint8_t*> image_data;
+extern std::map<std::string, std::pair<std::unique_ptr    <uint8_t[],
+                                       std::default_delete<uint8_t[]>>, uint32_t>> image_data;
 
 struct h_info_lib {
     uint16_t     h_lib_name_len;

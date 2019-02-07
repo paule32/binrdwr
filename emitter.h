@@ -7,12 +7,13 @@ class MyCodeEmitter {
     std::string lib_name;
 public:
     MyCodeEmitter();
-    
-    void write();
 
     uint32_t   code_len  ;
     uint8_t  * code_data ;
 
+    std::pair<std::unique_ptr    <uint8_t[],
+              std::default_delete<uint8_t[]>>, uint32_t>
+    getEmitCode();
        
     asmjit::X86Compiler  x86_compiler;
     asmjit::X86Emitter * x86_emitter ;

@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <iterator>
 #include <type_traits>
 #include <map>
 #include <vector>

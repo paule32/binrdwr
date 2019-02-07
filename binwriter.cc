@@ -2,7 +2,8 @@
 
 using namespace std;
 
-std::map<std::string, uint8_t*> image_data;
+std::map<std::string, std::pair<std::unique_ptr    <uint8_t[],
+                                std::default_delete<uint8_t[]>>, uint32_t>> image_data;
 
 MyHeaderWriter::MyHeaderWriter()
 {
@@ -26,14 +27,14 @@ MyHeaderWriter::MyHeaderWriter()
 
 
     MyCodeEmitter code_emitter;
-    image_data.emplace(std::string("write"), code_emitter.code_len, code_emitter.code_data);
-    image_data.emplace(std::string("read" ), code_emitter.code_len, code_emitter.code_data);
+    image_data.emplace(std::string("write"), code_emitter.getEmitCode() );
+    image_data.emplace(std::string("read" ), code_emitter.getEmitCode() );
 
 
     image.info_symbol.emplace_back( h_info_symbol { 5, "write", 0, 0, 101 } );
     image.info_symbol.emplace_back( h_info_symbol { 4, "read" , 0, 0, 202 } );
 
-    wr << image;
+//    wr << image;
     wr << image_data;
 
     wr.close();

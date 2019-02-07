@@ -55,6 +55,11 @@ int MyCodeEmitter::emitTest()
     return 0;
 }
 
+template<typename T>
+using UniqueArray = std::pair<std::unique_ptr<T[]>, size_t>;
+using UniqueByteArray = UniqueArray<uint8_t>;
+
+
 MyCodeEmitter::MyCodeEmitter()
 {
     x86_compiler.finalize();
@@ -64,15 +69,26 @@ std::cout << "final\n";
     x86_codeholder.init(x86_runtime.getCodeInfo());
     x86_codeholder.attach(&x86_compiler);
     x86_emitter = x86_compiler.asEmitter();
-    
+}
+
+
+std::pair<std::unique_ptr    <uint8_t[],
+          std::default_delete<uint8_t[]>>, uint32_t>
+MyCodeEmitter::getEmitCode()
+{
     int r = emitTest();
-std::cout << "emitser\n";
 
     // save code ...
     CodeBuffer & buffer = x86_codeholder.getSectionEntry(0)->getBuffer();
-    code_len   = buffer.getLength();
-    code_data  = buffer.getData();
+//    code_len   = buffer.getLength();
+//    code_data  = buffer.getData();
 
+    auto h_buffer = UniqueByteArray {
+        std::make_unique<uint8_t[]>(code_len), code_len
+    };
+    memcpy(h_buffer.first.get(), buffer.getData(), code_len);
     x86_codeholder.detach(&x86_compiler);
+
+    return h_buffer;
 }
 
