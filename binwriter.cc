@@ -26,8 +26,8 @@ MyHeaderWriter::MyHeaderWriter()
 
 
     MyCodeEmitter code_emitter;
-    image_data.emplace(std::string("write"), code_emitter.code_data);
-    image_data.emplace(std::string("read" ), code_emitter.code_data);
+    image_data.emplace(std::string("write"), code_emitter.code_len, code_emitter.code_data);
+    image_data.emplace(std::string("read" ), code_emitter.code_len, code_emitter.code_data);
 
 
     image.info_symbol.emplace_back( h_info_symbol { 5, "write", 0, 0, 101 } );
