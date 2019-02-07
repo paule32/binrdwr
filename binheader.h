@@ -23,15 +23,20 @@
 #include <map>
 #include <vector>
 
+#if 0
 #include "./asmjit/asmjit.h"
 #include "./asmtk/asmtk.h"
 using namespace std;
 using namespace asmjit;
 using namespace asmtk;
+#endif
 
 #include "binreader.h"
 #include "binwriter.h"
+
+#if 0
 #include "emitter.h"
+#endif
 
 #define EXPORT __attribute__((visibility("default")))
 #define IMPORT

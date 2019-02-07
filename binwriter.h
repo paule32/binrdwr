@@ -90,10 +90,11 @@ struct MyImageStruct {
 
 class MyHeaderWriter {
 public:
+/*
     MyHeaderWriter(
          std::string n,
          uint64_t length,
-         void   * buffer);
+         void   * buffer);*/  MyHeaderWriter();
     ~MyHeaderWriter();
     
     binwriter   wr;
