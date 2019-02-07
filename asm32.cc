@@ -51,32 +51,28 @@ int MyCodeEmitter::emitTest()
     x86_emitter->ret();
 
     x86_compiler.endFunc();
+
+    return 0;
 }
 
-MyCodeEmitter::MyCodeEmitter(std::string _name)
+MyCodeEmitter::MyCodeEmitter()
 {
-    lib_name = _name;
+    x86_compiler.finalize();
+std::cout << "final\n";
     
-    // write code ...
+    // init code ...
     x86_codeholder.init(x86_runtime.getCodeInfo());
-    
     x86_codeholder.attach(&x86_compiler);
     x86_emitter = x86_compiler.asEmitter();
     
     int r = emitTest();
-    std::cout << "result: " << r << std::endl;
-}
-
-void MyCodeEmitter::write()
-{
-    x86_compiler.finalize();
+std::cout << "emitser\n";
 
     // save code ...
     CodeBuffer & buffer = x86_codeholder.getSectionEntry(0)->getBuffer();
-    uint64_t code_len   = buffer.getLength();
+    code_len   = buffer.getLength();
+    code_data  = buffer.getData();
 
-    MyHeaderWriter hw(lib_name,code_len,
-    buffer.getData());
-    
     x86_codeholder.detach(&x86_compiler);
 }
+

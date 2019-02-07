@@ -6,9 +6,13 @@ class MyCodeEmitter {
     int emitTest();
     std::string lib_name;
 public:
-    MyCodeEmitter(std::string _name);
+    MyCodeEmitter();
     
     void write();
+
+    uint32_t   code_len  ;
+    uint8_t  * code_data ;
+
        
     asmjit::X86Compiler  x86_compiler;
     asmjit::X86Emitter * x86_emitter ;
