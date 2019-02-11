@@ -40,7 +40,4 @@ using namespace asmtk;
 
 extern "C" void vmExec(uint8_t *img, size_t len);
 
-constexpr int ASM32_MAGIC   = 0x19790208;
-constexpr int ASM32_VERSION = 0x00000132;
-
 #endif

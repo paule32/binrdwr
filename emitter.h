@@ -11,9 +11,8 @@ public:
     uint32_t   code_len  ;
     uint8_t  * code_data ;
 
-    std::pair<std::unique_ptr    <uint8_t[],
-              std::default_delete<uint8_t[]>>, uint32_t>
-    getEmitCode();
+    uint32_t   getEmitCodeLength() const { return code_len;  }
+    uint8_t*   getEmitCode()       const { return code_data; }
        
     asmjit::X86Compiler  x86_compiler;
     asmjit::X86Emitter * x86_emitter ;
