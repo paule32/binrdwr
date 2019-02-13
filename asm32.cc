@@ -24,7 +24,7 @@ int MyCodeEmitter::emitTest()
     x86_emitter->sub (x86::esp, 8);
     x86_emitter->sub (x86::esp, 12);
     x86_emitter->push(x86::dword_ptr(x86::ebp,8));
-    x86_emitter->mov (x86::ebx, addr_puts);
+    x86_emitter->mov (x86::ebx, 2);
     x86_emitter->call(x86::ebx);
     x86_emitter->add (x86::esp, 16);
     x86_emitter->leave();

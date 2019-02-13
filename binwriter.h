@@ -21,6 +21,12 @@ struct h_info_symbol {
     uint32_t	 h_symbol_offset;   // 0 - function in image (offset)
 };
 
+struct h_info_externals {
+    uint16_t     h_external_symbol_name_len;
+    std::string  h_external_symbol_name;
+    uint16_t     h_external_symbol_parameter_type;
+};
+
 struct MyImageStruct {
     uint32_t	 h_magic   = ASM32_MAGIC;
     uint16_t	 h_version = ASM32_VERSION;
@@ -33,10 +39,10 @@ struct MyImageStruct {
     std::string  h_image_name;		// image name string
 
     uint32_t     h_info_lib_no;
-    std::vector< h_info_lib>     info_lib;
+    std::vector< h_info_lib>            info_lib;
 
     uint32_t     h_info_symbol_no;
-    std::vector< h_info_symbol>  info_symbol;
+    std::vector< h_info_symbol>         info_symbol;
 
     uint32_t	         h_image_len;   // length of code data
     std::vector<uint8_t> h_image_data;  // code data
@@ -48,13 +54,22 @@ class TStream
 public:
     const std::string m_path = "";
     char *buffer;
-    FILE *outfile;
+    FILE *outfile = nullptr;
     uint32_t file_entry = 0;
   
     TStream()                       : m_path("") { }
     TStream(const std::string& path,
             const std::string& mode): m_path(path) {
         outfile = fopen(path.c_str(),mode.c_str());
+    }
+    void open(const std::string &path,
+              const std::string &mode) : m_path(path) {
+        if (outfile != nullptr)
+            fclose(outfile);
+        outfile = fopen(path.c_str(),mode.c_str());
+    }
+    void close() {
+        fclose(outfile);
     }
    ~TStream() {
         fclose(outfile);
@@ -176,6 +191,30 @@ inline TStream & operator >> (TStream &os, std::vector<h_info_symbol> &v) {
     return os;
 }
 
+inline TStream & operator << (TStream &os, const std::vector<h_info_externals> &v) {
+    uint32_t vec_len = v.size();
+    os <<    vec_len ;
+
+    for (const h_info_externals n: v) {
+        os << n.h_external_symbol_name;
+        os << n.h_external_symbol_type;
+    }
+    return os;
+}
+inline TStream & operator >> (TStream &os, std::vector<h_info_externals> &v) {
+    uint32_t data_len;
+    os >>    data_len;
+
+    uint8_t  data;
+
+    for (int i = 0; i < data_len; i++) {
+        fread(&data,sizeof(data),1,os.outfile);
+        v.push_back(data);
+    }
+
+    return os;
+}
+
 inline TStream & operator << (TStream &os, const std::vector<uint8_t>& v) {
     uint32_t vec_len = v.size();
     os <<    vec_len ;
@@ -189,7 +228,7 @@ inline TStream & operator >> (TStream &os, std::vector<uint8_t> &v) {
     uint8_t  data;
     fread( & data_len,sizeof(uint32_t),1,os.outfile);
 
-    for (int i = 0; i < data_len; data_len++) {
+    for (int i = 0; i < data_len; i++) {
         fread(&data,sizeof(data),1,os.outfile);
         v.push_back(data);
     }
@@ -225,6 +264,10 @@ inline TStream &operator >> (TStream &os, h_info_symbol &v) {
     os >> v.h_symbol_lib;
     os >> v.h_symbol_offset;
 
+    return os;
+}
+inline TStream &operator << (TStream &os, const h_info_externals &v {
+    os << v.h_external_symbol_parameters_no;
     return os;
 }
 

@@ -36,6 +36,11 @@ MyHeaderWriter::MyHeaderWriter()
     image.h_image_symbols = 2;
 
     wr << image;
+    wr.close();
+
+    wr.open("testovl.ovl","rb")
+    wr >> image;
+    wr.close();
 }
 
 MyHeaderWriter::~MyHeaderWriter() { }

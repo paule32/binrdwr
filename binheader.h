@@ -40,4 +40,16 @@ using namespace asmtk;
 
 extern "C" void vmExec(uint8_t *img, size_t len);
 
+struct Externals {
+    void *funcaddr;
+} externals[2] = {
+    { &puts },      // +0
+    { &printf }     // +4
+};
+
+typedef void (*func)(char *);   // signature
+
+# define EXTERN_(x)      externals[x].funcaddr;
+# define EXTERN_PUTS     EXTERN_(0)
+
 #endif
