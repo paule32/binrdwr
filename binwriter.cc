@@ -1,4 +1,5 @@
 #include "binheader.h"
+#include "externals.h"
 
 using namespace std;
 
@@ -18,15 +19,14 @@ MyHeaderWriter::MyHeaderWriter()
     image.info_lib.emplace_back( h_info_lib { 7, "BarLib2" } );
 
 
-    MyCodeEmitter code_emitter;
     image.h_image_data.clear();
 
     image.h_image_data.insert(
     image.h_image_data.end(),
-
-    code_emitter.code_data,
-    code_emitter.code_data+
-    code_emitter.code_len);
+        wr.code_emitter.code_data,
+        wr.code_emitter.code_data+
+        wr.code_emitter.code_len
+    );
 
 
     image.info_symbol.clear();
@@ -36,10 +36,6 @@ MyHeaderWriter::MyHeaderWriter()
     image.h_image_symbols = 2;
 
     wr << image;
-    wr.close();
-
-    wr.open("testovl.ovl","rb")
-    wr >> image;
     wr.close();
 }
 

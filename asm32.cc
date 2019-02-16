@@ -1,4 +1,5 @@
 #include "binheader.h"
+#include "externals.h"
 
 void my_func(int p) { std::printf("----> %d\n",p); }
 void my_func2(void) {
@@ -12,22 +13,58 @@ void my_func3(char *p) {
 
 int MyCodeEmitter::emitTest()
 {
-    const auto addr_puts = reinterpret_cast<size_t>(&puts);
+//    const auto GOTaddr = reinterpret_cast<uint32_t>(&externals);
 
-//    asmjit::Label L1 = x86_compiler.newLabel();
-//    asmjit::Label L2 = x86_compiler.newLabel();
+    uint64_t GOTaddr64    = reinterpret_cast<uint64_t>(&externals);
+    uint32_t GOTaddr32_hd =  GOTaddr64 & 0xFFFFFFFF;
 
-//    const char* text = "Hello Computer\n";
+    asmjit::Label x86_testfunc = x86_compiler.newLabel();
+    asmjit::Label x86_main     = x86_compiler.newLabel();
 
+/* entry point */
+    x86_emitter->call(x86_main);
+    x86_emitter->ret();
+
+/* testfunc */
+    x86_compiler.bind(x86_testfunc);
+    //
     x86_emitter->push(x86::ebp);
     x86_emitter->mov (x86::ebp, x86::esp);
-    x86_emitter->sub (x86::esp, 8);
+    x86_emitter->sub (x86::esp, 24);
+    x86_emitter->mov (x86::eax, x86::dword_ptr(GOTaddr32_hd));
+    x86_emitter->mov (x86::dword_ptr( x86::ebp, -12), x86::eax);
     x86_emitter->sub (x86::esp, 12);
-    x86_emitter->push(x86::dword_ptr(x86::ebp,8));
-    x86_emitter->mov (x86::ebx, 2);
-    x86_emitter->call(x86::ebx);
+    x86_emitter->push(x86::ptr( x86::ebp, +8));
+    x86_emitter->mov (x86::eax, x86::dword_ptr(x86::ebp, -12));
+    x86_emitter->call(x86::eax);
     x86_emitter->add (x86::esp, 16);
     x86_emitter->leave();
+    x86_emitter->ret();
+
+/* main */
+    asmjit::Label x86_str_L1 = x86_compiler.newLabel();
+    char str[] = "Monk";
+    x86_emitter->bind (x86_str_L1);
+    x86_emitter->embed(str, strlen(str)+1);
+    //
+    x86_compiler.bind(x86_main);
+    //
+    x86_emitter->lea (x86::ecx, x86::dword_ptr(x86::esp, 4));
+    x86_emitter->and_(x86::esp, -16);
+    x86_emitter->push(x86::ptr(x86::ecx, -4));
+    x86_emitter->push(x86::ebp);
+    x86_emitter->mov (x86::ebp, x86::esp);
+    x86_emitter->push(x86::ecx);
+    x86_emitter->sub (x86::esp, 4);
+    x86_emitter->sub (x86::esp, 12);
+    x86_emitter->lea (x86::eax, x86::ptr(x86_str_L1));
+    x86_emitter->call(x86_testfunc);
+    x86_emitter->add (x86::esp, 16);
+    x86_emitter->push(x86::eax);
+    x86_emitter->mov (x86::eax, 0);
+    x86_emitter->mov (x86::ecx, x86::dword_ptr(x86::ebp, -4));
+    x86_emitter->leave();
+    x86_emitter->lea (x86::esp, (x86::ecx, -4));
     x86_emitter->ret();
 
     x86_compiler.endFunc();
